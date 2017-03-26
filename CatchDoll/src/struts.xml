@@ -6,11 +6,11 @@
 <struts>
 	<!-- ,json-default -->
 	<constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
-	<package name="default" namespace="/" extends="struts-default">
+	<package name="default" namespace="/" extends="struts-default,json-default ">
 		<action name="login" class="com.hnn.cd.action.LoginAction">
-			<result name="success">/index.jsp</result>
+			<result name="json" type="json"></result>
 			<result name="error">/error.jsp</result>
-			<allowed-methods>login2,login3</allowed-methods>
+			<allowed-methods>login,login3</allowed-methods>
 		</action>
 	</package>
 	
