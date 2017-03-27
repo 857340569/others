@@ -247,25 +247,26 @@ public class SqlHelper
 	}
 	/**
 	 * 得到更新参数
-	 * updateType:ADD如：(name,sex) values(?,?);
+	 * executeType如：(name,sex) values(?,?);
 	 * MODIFY如：name=?,sex=?
-	 * @param updateType
+	 * QUERY 如：name,sex
+	 * @param executeType
 	 * @param t
 	 * @param ignoreFieldName
 	 * @return
 	 */
-	public static <T> ExecuteParam getUpdateParam(ExecuteType updateType,T t,String ...ignoreFieldName)
+	public static <T> ExecuteParam getUpdateParam(ExecuteType executeType,T t,String ...ignoreFieldName)
 	{
 		Class<?> tClass=t.getClass();
 		Field[] fields = tClass.getDeclaredFields();
 		String paramNames="";
 		String paramSplit="";
 		String addValPara="values(";
-		if(updateType==ExecuteType.QUERY)
+		if(executeType==ExecuteType.QUERY)
 		{
 			paramSplit=",";
 		}
-		else if(updateType==ExecuteType.ADD)
+		else if(executeType==ExecuteType.ADD)
 		{
 			paramNames="(";
 			paramSplit=",";
@@ -292,7 +293,7 @@ public class SqlHelper
 				e.printStackTrace();
 			}
 		}
-		if(updateType==ExecuteType.ADD)
+		if(executeType==ExecuteType.ADD)
 		{
 			paramNames=StringUtils.trimEnd(paramNames, ",")+")"+StringUtils.trimEnd(addValPara, ",")+")";
 		}else{//QUERY和MODIFY 都一样
