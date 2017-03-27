@@ -11,6 +11,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 import zp.base.bean.UpdateParam;
 
 
@@ -19,28 +23,41 @@ public class SqlHelper
 	private Connection cc;
 	private PreparedStatement ps;
 	private ResultSet rs;
+    private static DataSource dataSource = null;
+	static {
+		// dataSource资源只能初始化一次 c3p0-config.xml <named-config name="db_catch_doll"> 
+		dataSource = new ComboPooledDataSource("db_catch_doll");
+	}
 	public enum DbType
 	{
 		MYSQL,SQLSERVER,JDBCODBC
 	}
 	public SqlHelper() {
-		if (!DbConfig.isInited()) {
-			System.err.println(new Exception("还未配置数据库！"));
-			return;
-		}
-		switch (DbConfig.getCurrentDBType()) {
-		case MYSQL:
-			mySqlConnect();
-			break;
-		case SQLSERVER:
-			sqlServerConnect();	
-			break;
-		case JDBCODBC:
-			odbcConnect();
-			break;
-		default:
-			break;
-		}
+		try
+		{
+			cc=dataSource.getConnection();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		} 
+		
+//		if (!DbConfig.isInited()) {
+//			System.err.println(new Exception("还未配置数据库！"));
+//			return;
+//		}
+//		switch (DbConfig.getCurrentDBType()) {
+//		case MYSQL:
+//			mySqlConnect();
+//			break;
+//		case SQLSERVER:
+//			sqlServerConnect();	
+//			break;
+//		case JDBCODBC:
+//			odbcConnect();
+//			break;
+//		default:
+//			break;
+//		}
 	}
 	
 	
