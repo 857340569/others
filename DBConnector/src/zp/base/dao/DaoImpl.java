@@ -21,8 +21,7 @@ public class DaoImpl extends Dao {
 			ResultSet set=helper.findExecute(sql, paramVals);
 			while(set.next())
 			{
-				T t=claz.newInstance();
-				SqlHelper.getBeanFromDb(t,set);
+				T t=SqlHelper.getBeanFromDb(claz,set);
 				users.add(t);
 			}
 		} catch (Exception e) {
@@ -37,8 +36,7 @@ public class DaoImpl extends Dao {
 			ResultSet set=helper.findExecute(sql,paramVals);
 			if(set.next())
 			{
-				T t=claz.newInstance();
-				SqlHelper.getBeanFromDb(t,set);
+				T t=SqlHelper.getBeanFromDb(claz,set);
 				return t;
 			}
 		} catch (Exception e) {

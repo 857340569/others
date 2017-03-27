@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +15,9 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.sun.org.apache.bcel.internal.generic.RET;
 
-import zp.base.bean.UpdateParam;
+import zp.base.bean.ExecuteParam;
 
 
 public class SqlHelper
@@ -187,31 +189,39 @@ public class SqlHelper
 		}
 		return result;
 	}
-	
-	public static <T> T getBeanFromDb(T t,ResultSet set)
+	/**
+	 * 从数据库记录ResultSet中得到实体对象
+	 * @param tClass
+	 * @param set
+	 * @return
+	 */
+	public static <T> T getBeanFromDb(Class<T> tClass,ResultSet set)
 	{
-		if(t!=null&&set!=null)
+		if(tClass!=null&&set!=null)
 		{
-			Class<?> tClass=t.getClass();
-			Field[] fields = tClass.getDeclaredFields();
-			for(Field field:fields)
-			{
-				field.setAccessible(true);
-				String fieldName=field.getName();
-				
-				try{
-					Class<?> fClass=field.getType();
-					Object value=set.getObject(fieldName);
-					Method method=tClass.getMethod("set"+fieldName.substring(0, 1).toUpperCase()+fieldName.substring(1), fClass);
-					method.setAccessible(true);
-					method.invoke(t, value);
-				}catch (Exception e) {
-					e.printStackTrace();
+			try {
+				T t=tClass.newInstance();
+				ResultSetMetaData metaData = set.getMetaData();
+				int columnCount=metaData.getColumnCount();
+				for (int i = 1; i <=columnCount; i++) {
+					try{
+						String labelName=metaData.getColumnName(i);
+						Field field=tClass.getDeclaredField(labelName);
+						Class<?> fClass=field.getType();
+						Object value=set.getObject(labelName);
+						Method method=tClass.getMethod("set"+labelName.substring(0, 1).toUpperCase()+labelName.substring(1), fClass);
+						method.setAccessible(true);
+						method.invoke(t, value);
+					}catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-				
+				return t;
+			} catch (Exception e1) {
+				e1.printStackTrace();
 			}
 		}
-		return t;
+		return null;
 	}
 	/**
 	 * 根据变量名，得到实体类某个变量的值
@@ -231,9 +241,9 @@ public class SqlHelper
 		}
 		return "";
 	}
-	public enum UpdateType
+	public enum ExecuteType
 	{
-		ADD,MODIFY
+		QUERY,ADD,MODIFY
 	}
 	/**
 	 * 得到更新参数
@@ -244,14 +254,18 @@ public class SqlHelper
 	 * @param ignoreFieldName
 	 * @return
 	 */
-	public static <T> UpdateParam getUpdateParam(UpdateType updateType,T t,String ...ignoreFieldName)
+	public static <T> ExecuteParam getUpdateParam(ExecuteType updateType,T t,String ...ignoreFieldName)
 	{
 		Class<?> tClass=t.getClass();
 		Field[] fields = tClass.getDeclaredFields();
 		String paramNames="";
 		String paramSplit="";
 		String addValPara="values(";
-		if(updateType==UpdateType.ADD)
+		if(updateType==ExecuteType.QUERY)
+		{
+			paramSplit=",";
+		}
+		else if(updateType==ExecuteType.ADD)
 		{
 			paramNames="(";
 			paramSplit=",";
@@ -267,6 +281,7 @@ public class SqlHelper
 			int index=CollectionUtils.arrayIndexOf(ignoreFieldName, fieldName);
 			if(index!=-1)
 			{
+				//此字段已忽略，跳过此次循环
 				continue;
 			}
 			try {
@@ -277,13 +292,13 @@ public class SqlHelper
 				e.printStackTrace();
 			}
 		}
-		if(updateType==UpdateType.ADD)
+		if(updateType==ExecuteType.ADD)
 		{
 			paramNames=StringUtils.trimEnd(paramNames, ",")+")"+StringUtils.trimEnd(addValPara, ",")+")";
-		}else{
+		}else{//QUERY和MODIFY 都一样
 			paramNames=StringUtils.trimEnd(paramNames, ",");
 		}
-		UpdateParam param=new UpdateParam();
+		ExecuteParam param=new ExecuteParam();
 		param.setParamNames(paramNames);
 		param.setParamVals(paramValues);
 		return param;

@@ -3,9 +3,9 @@ package zp.base.bean;
 import java.util.List;
 
 /**
- * 实体更新部分字段及值
+ * sql语句表字段及对应的值
  */
-public class UpdateParam {
+public class ExecuteParam {
 	private String paramNames;
 	private List<String> paramVals;
 	
