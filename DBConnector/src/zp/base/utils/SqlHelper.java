@@ -247,8 +247,8 @@ public class SqlHelper
 	}
 	/**
 	 * 得到更新参数
-	 * executeType如：(name,sex) values(?,?);
-	 * MODIFY如：name=?,sex=?
+	 * executeType：ADD如：(name,sex) values(?,?);
+	 * MODIFY 如：name=?,sex=?
 	 * QUERY 如：name,sex
 	 * @param executeType
 	 * @param t
