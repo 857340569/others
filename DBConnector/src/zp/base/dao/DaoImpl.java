@@ -16,31 +16,39 @@ public class DaoImpl extends Dao {
 	@Override
 	public <T> List<T> query(Class<T> claz, String sql, String[] paramVals) {
 		List<T> users=new ArrayList<T>();
+		SqlHelper helper=new SqlHelper();
+		ResultSet set=null;
 		try {
-			SqlHelper helper=new SqlHelper();
-			ResultSet set=helper.findExecute(sql, paramVals);
+			set=helper.findExecute(sql,paramVals);
 			while(set.next())
 			{
 				T t=SqlHelper.getBeanFromDb(claz,set);
 				users.add(t);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			helper.close(set);
 		}
 		return users;
 	}
 
 	@Override
 	public <T> T querySingle(Class<T> claz, String sql, String[] paramVals) {
+		SqlHelper helper=new SqlHelper();
+		ResultSet set=null;
 		try {
-			SqlHelper helper=new SqlHelper();
-			ResultSet set=helper.findExecute(sql,paramVals);
+			set=helper.findExecute(sql,paramVals);
 			if(set.next())
 			{
 				T t=SqlHelper.getBeanFromDb(claz,set);
 				return t;
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
+		}finally {
+			helper.close(set);
 		}
 		return null;
 	}
@@ -50,6 +58,7 @@ public class DaoImpl extends Dao {
 		SqlHelper helper=new SqlHelper();
 		//result　表示执行成功的条数，大于零说明执行成功
 		int result=helper.updateExecute(sql,paramVals);
+		helper.close();
 		return result>0;
 	}
 

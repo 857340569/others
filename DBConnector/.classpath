@@ -12,7 +12,7 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/CatchDoll/WebContent/WEB-INF/lib/c3p0-0.9.5.2.jar"/>
+	<classpathentry kind="lib" path="/CatchDoll/WebContent/WEB-INF/lib/c3p0-0.9.5.2.jar" sourcepath="C:/Users/tracker/Downloads/c3p0-c3p0-0.9.5.2.zip"/>
 	<classpathentry kind="lib" path="/CatchDoll/WebContent/WEB-INF/lib/mchange-commons-java-0.2.11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

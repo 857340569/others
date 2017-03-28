@@ -25,7 +25,7 @@ public class SqlHelper
 	private Connection cc;
 	private PreparedStatement ps;
 	private ResultSet rs;
-    private static DataSource dataSource = null;
+    private final static DataSource dataSource;
 	static {
 		// dataSource资源只能初始化一次 c3p0-config.xml <named-config name="db_catch_doll"> 
 		dataSource = new ComboPooledDataSource("db_catch_doll");
@@ -62,7 +62,28 @@ public class SqlHelper
 //		}
 	}
 	
+	public void prepareTransaction(){
+		if(cc!=null)
+		{
+			try {
+				cc.setAutoCommit(false);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
+	public void commitTransaction(){
+		if(cc!=null)
+		{
+			try {
+				cc.setAutoCommit(true);
+				cc.commit();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	private void mySqlConnect()
 	{
 		try
@@ -118,6 +139,11 @@ public class SqlHelper
 		{
 			e.printStackTrace();
 		}
+	}
+	public void close(ResultSet rs)
+	{
+		this.rs=rs;
+		close();
 	}
 	public ResultSet findExecute(String sql,String [] param)
 	{

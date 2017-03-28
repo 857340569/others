@@ -53,5 +53,10 @@ public class User {
 	public void setAccount(double account) {
 		this.account = account;
 	}
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", nickName=" + nickName + ", tel=" + tel + ", thirdAccount=" + thirdAccount
+				+ ", email=" + email + ", pwd=" + pwd + ", account=" + account + "]";
+	}
 	
 }
