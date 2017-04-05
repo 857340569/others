@@ -1,6 +1,5 @@
 package zp.base.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +35,7 @@ public class CollectionUtils {
 	 */
 	public static <T> T[] listToArray(List<T> list)
 	{
-		if(list==null) return null;
+		if(isEmpty(list)) return null;
 		//List如此设计是因为Java编译器不允许我们new范型数组。不能这么定义一个数组：
 		//T arr=new T[list.size()];
 		T[] t =  (T[])java.lang.reflect.Array.
