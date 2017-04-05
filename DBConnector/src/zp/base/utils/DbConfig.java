@@ -1,7 +1,7 @@
 package zp.base.utils;
 
 import zp.base.utils.SqlHelper.DbType;
-
+@Deprecated
 public class DbConfig {
 	private static DbType currentDBType=DbType.MYSQL;
 	private static String dbUrl="localhost:3306";
