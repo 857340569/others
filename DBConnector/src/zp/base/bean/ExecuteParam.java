@@ -3,7 +3,7 @@ package zp.base.bean;
 import java.util.List;
 
 /**
- * sqlÓï¾ä±í×Ö¶Î¼°¶ÔÓ¦µÄÖµ
+ * sqlè¯­å¥è¡¨å­—æ®µåŠå¯¹åº”çš„å€¼
  */
 public class ExecuteParam {
 	private String paramNames;

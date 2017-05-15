@@ -4,10 +4,10 @@ import java.util.List;
 
 public abstract class Dao {
 	/**
-	 * ¸ù¾İÌõ¼ş²éÑ¯
+	 * æ ¹æ®æ¡ä»¶æŸ¥è¯¢
 	 * @param claz
 	 * @param sql
-	 * @param paramVals Ìõ¼ş¶ÔÓ¦µÄÖµ
+	 * @param paramVals æ¡ä»¶å¯¹åº”çš„å€¼
 	 */
 	public abstract <T> List<T> query(Class<T> claz,String sql);
 	public abstract <T> List<T> query(Class<T> claz,String sql,String[] paramVals);

@@ -2,9 +2,7 @@ package zp.base.utils;
 
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -15,7 +13,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.sun.org.apache.bcel.internal.generic.RET;
 
 import zp.base.bean.ExecuteParam;
 
@@ -25,41 +22,10 @@ public class SqlHelper
 	private Connection cc;
 	private PreparedStatement ps;
 	private ResultSet rs;
-    private final static DataSource dataSource;
-	static {
-		// dataSource×ÊÔ´Ö»ÄÜ³õÊ¼»¯Ò»´Î c3p0-config.xml <named-config name="db_catch_doll"> 
-		dataSource = new ComboPooledDataSource("db_catch_doll");
-	}
-	public enum DbType
-	{
-		MYSQL,SQLSERVER,JDBCODBC
-	}
-	public SqlHelper() {
-		try
-		{
-			cc=dataSource.getConnection();
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		} 
-		
-//		if (!DbConfig.isInited()) {
-//			System.err.println(new Exception("»¹Î´ÅäÖÃÊı¾İ¿â£¡"));
-//			return;
-//		}
-//		switch (DbConfig.getCurrentDBType()) {
-//		case MYSQL:
-//			mySqlConnect();
-//			break;
-//		case SQLSERVER:
-//			sqlServerConnect();	
-//			break;
-//		case JDBCODBC:
-//			odbcConnect();
-//			break;
-//		default:
-//			break;
-//		}
+    private final DataSource dataSource;
+	private SqlHelper(String db_config_name) {
+		// dataSourceèµ„æºåªèƒ½åˆå§‹åŒ–ä¸€æ¬¡ c3p0-config.xml <named-config name="db_catch_doll"> 
+		dataSource = new ComboPooledDataSource(db_config_name);
 	}
 	
 	public void prepareTransaction(){
@@ -84,39 +50,18 @@ public class SqlHelper
 			}
 		}
 	}
-	private void mySqlConnect()
+	public static String db_config_name="";
+	public static SqlHelper getInstance()
 	{
-		try
+		if(StringUtils.isEmpty(db_config_name))
 		{
-			Class.forName("com.mysql.jdbc.Driver");
-			cc=DriverManager.getConnection("jdbc:mysql://"+DbConfig.getDbUrl()+"/"+DbConfig.getDbName()+"?useUnicode=true&characterEncoding=UTF-8",DbConfig.getUserName(),DbConfig.getPwd());
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		} 
+			System.err.println("è¯·é…ç½®SqlHelper.db_config_name");
+		}
+		return InstanceTools.sqlHelper;
 	}
 	
-	private void sqlServerConnect()
-	{
-		try
-		{
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-			cc=DriverManager.getConnection("jdbc:sqlserver://"+DbConfig.getDbUrl()+";DatabaseName="+DbConfig.getDbName()+"?useUnicode=true&characterEncoding=UTF-8",DbConfig.getUserName(),DbConfig.getPwd());
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		} 
-	}
-	private void odbcConnect()
-	{
-		try
-		{
-			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-			cc=DriverManager.getConnection("jdbc:odbc:"+DbConfig.getDbName(),DbConfig.getUserName(),DbConfig.getPwd());
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		} 
+	private static class InstanceTools{
+		private  static SqlHelper sqlHelper=new SqlHelper(db_config_name);
 	}
 	
 	public void close()
@@ -151,6 +96,7 @@ public class SqlHelper
 		{
 			try
 			{
+				cc=dataSource.getConnection();
 				ps=cc.prepareStatement(sql,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
 				rs=ps.executeQuery();
 			} catch (SQLException e)
@@ -162,6 +108,7 @@ public class SqlHelper
 		else {
 			try
 			{
+				cc=dataSource.getConnection();
 				ps=cc.prepareStatement(sql,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
 				for (int i = 0; i < param.length; i++)
 				{
@@ -180,10 +127,11 @@ public class SqlHelper
 	public int updateExecute(String sql,String [] param)
 	{
 		int result=0;
-		if (param.length==0)
+		if (param==null||param.length==0)
 		{
 			try
 			{
+				cc=dataSource.getConnection();
 				ps=cc.prepareStatement(sql);
 				result=ps.executeUpdate();
 			} catch (SQLException e)
@@ -198,6 +146,7 @@ public class SqlHelper
 		else {
 			try
 			{
+				cc=dataSource.getConnection();
 				ps=cc.prepareStatement(sql);
 				for (int i = 0; i < param.length; i++)
 				{
@@ -216,7 +165,7 @@ public class SqlHelper
 		return result;
 	}
 	/**
-	 * ´ÓÊı¾İ¿â¼ÇÂ¼ResultSetÖĞµÃµ½ÊµÌå¶ÔÏó
+	 * ä»æ•°æ®åº“è®°å½•ResultSetä¸­å¾—åˆ°å®ä½“å¯¹è±¡
 	 * @param tClass
 	 * @param set
 	 * @return
@@ -233,11 +182,13 @@ public class SqlHelper
 					try{
 						String labelName=metaData.getColumnName(i);
 						Field field=tClass.getDeclaredField(labelName);
-						Class<?> fClass=field.getType();
+						field.setAccessible(true);
 						Object value=set.getObject(labelName);
-						Method method=tClass.getMethod("set"+labelName.substring(0, 1).toUpperCase()+labelName.substring(1), fClass);
-						method.setAccessible(true);
-						method.invoke(t, value);
+//						Class<?> fClass=field.getType();
+//						Method method=tClass.getMethod("set"+labelName.substring(0, 1).toUpperCase()+labelName.substring(1), fClass);
+//						method.setAccessible(true);
+//						method.invoke(t, value);
+						field.set(t, String.valueOf(value));
 					}catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -250,7 +201,7 @@ public class SqlHelper
 		return null;
 	}
 	/**
-	 * ¸ù¾İ±äÁ¿Ãû£¬µÃµ½ÊµÌåÀàÄ³¸ö±äÁ¿µÄÖµ
+	 * æ ¹æ®å˜é‡åï¼Œå¾—åˆ°å®ä½“ç±»æŸä¸ªå˜é‡çš„å€¼
 	 * @param t
 	 * @param fieldName
 	 * @return
@@ -272,10 +223,10 @@ public class SqlHelper
 		QUERY,ADD,MODIFY
 	}
 	/**
-	 * µÃµ½¸üĞÂ²ÎÊı
-	 * executeType£ºADDÈç£º(name,sex) values(?,?);
-	 * MODIFY Èç£ºname=?,sex=?
-	 * QUERY Èç£ºname,sex
+	 * å¾—åˆ°æ›´æ–°å‚æ•°
+	 * executeTypeï¼šADDå¦‚ï¼š(name,sex) values(?,?);
+	 * MODIFY å¦‚ï¼šname=?,sex=?
+	 * QUERY å¦‚ï¼šname,sex
 	 * @param executeType
 	 * @param t
 	 * @param ignoreFieldName
@@ -308,7 +259,7 @@ public class SqlHelper
 			int index=CollectionUtils.arrayIndexOf(ignoreFieldName, fieldName);
 			if(index!=-1)
 			{
-				//´Ë×Ö¶ÎÒÑºöÂÔ£¬Ìø¹ı´Ë´ÎÑ­»·
+				//æ­¤å­—æ®µå·²å¿½ç•¥ï¼Œè·³è¿‡æ­¤æ¬¡å¾ªç¯
 				continue;
 			}
 			try {
@@ -322,7 +273,7 @@ public class SqlHelper
 		if(executeType==ExecuteType.ADD)
 		{
 			paramNames=StringUtils.trimEnd(paramNames, ",")+")"+StringUtils.trimEnd(addValPara, ",")+")";
-		}else{//QUERYºÍMODIFY ¶¼Ò»Ñù
+		}else{//QUERYå’ŒMODIFY éƒ½ä¸€æ ·
 			paramNames=StringUtils.trimEnd(paramNames, ",");
 		}
 		ExecuteParam param=new ExecuteParam();

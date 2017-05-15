@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CollectionUtils {
 	/**
-	 * ÅĞ¶Ï¼¯ºÏÊÇ·ñÎª¿Õ
+	 * åˆ¤æ–­é›†åˆæ˜¯å¦ä¸ºç©º
 	 * @param collection
 	 * @return
 	 */
@@ -16,7 +16,7 @@ public class CollectionUtils {
 	}
 	
 	/**
-	 * ´ÓÊı×éÖĞ²éÕÒ
+	 * ä»æ•°ç»„ä¸­æŸ¥æ‰¾
 	 * @param tArray
 	 * @param t
 	 * @return
@@ -29,17 +29,14 @@ public class CollectionUtils {
 	}
 	
 	/**
-	 * ½«¼¯ºÏ×ª»»³ÉÊı×é
+	 * å°†Stringé›†åˆè½¬æ¢æˆæ•°ç»„
 	 * @param list
 	 * @return
 	 */
-	public static <T> T[] listToArray(List<T> list)
+	public static String[] listToArray(List<String> list)
 	{
-		if(isEmpty(list)) return null;
-		//ListÈç´ËÉè¼ÆÊÇÒòÎªJava±àÒëÆ÷²»ÔÊĞíÎÒÃÇnew·¶ĞÍÊı×é¡£²»ÄÜÕâÃ´¶¨ÒåÒ»¸öÊı×é£º
-		//T arr=new T[list.size()];
-		T[] t =  (T[])java.lang.reflect.Array.
-				newInstance(list.get(0).getClass().getComponentType(), list.size());
-		return list.toArray(t);
+		String[] strArray=new String[list.size()];
+		return list.toArray(strArray);
 	}
+	
 }

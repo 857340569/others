@@ -26,7 +26,7 @@ public class StringUtils {
 		return false;
 	}
 	/**
-	 * È¥³ý×Ö·û´®Î²²¿Ö¸¶¨×Ö·û´®
+	 * åŽ»é™¤å­—ç¬¦ä¸²å°¾éƒ¨æŒ‡å®šå­—ç¬¦ä¸²
 	 * @param str
 	 * @param prefix
 	 * @return

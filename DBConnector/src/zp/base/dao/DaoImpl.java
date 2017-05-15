@@ -16,7 +16,7 @@ public class DaoImpl extends Dao {
 	@Override
 	public <T> List<T> query(Class<T> claz, String sql, String[] paramVals) {
 		List<T> users=new ArrayList<T>();
-		SqlHelper helper=new SqlHelper();
+		SqlHelper helper=SqlHelper.getInstance();
 		ResultSet set=null;
 		try {
 			set=helper.findExecute(sql,paramVals);
@@ -35,7 +35,7 @@ public class DaoImpl extends Dao {
 
 	@Override
 	public <T> T querySingle(Class<T> claz, String sql, String[] paramVals) {
-		SqlHelper helper=new SqlHelper();
+		SqlHelper helper=SqlHelper.getInstance();
 		ResultSet set=null;
 		try {
 			set=helper.findExecute(sql,paramVals);
@@ -55,13 +55,11 @@ public class DaoImpl extends Dao {
 
 	@Override
 	public <T> boolean update(Class<T> claz, String sql, String[] paramVals) {
-		SqlHelper helper=new SqlHelper();
-		//result¡¡±íÊ¾Ö´ÐÐ³É¹¦µÄÌõÊý£¬´óÓÚÁãËµÃ÷Ö´ÐÐ³É¹¦
+		SqlHelper helper=SqlHelper.getInstance();
+		//resultã€€è¡¨ç¤ºæ‰§è¡ŒæˆåŠŸçš„æ¡æ•°ï¼Œå¤§äºŽé›¶è¯´æ˜Žæ‰§è¡ŒæˆåŠŸ
 		int result=helper.updateExecute(sql,paramVals);
 		helper.close();
 		return result>0;
 	}
-
-	
 	
 }
