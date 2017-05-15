@@ -27,6 +27,19 @@ public class SqlHelper
 		// dataSource资源只能初始化一次 c3p0-config.xml <named-config name="db_catch_doll"> 
 		dataSource = new ComboPooledDataSource(db_config_name);
 	}
+	public static String db_config_name="";
+	public static SqlHelper getInstance()
+	{
+		if(StringUtils.isEmpty(db_config_name))
+		{
+			System.err.println("请配置SqlHelper.db_config_name");
+		}
+		return InstanceTools.sqlHelper;
+	}
+	
+	private static class InstanceTools{
+		private final static SqlHelper sqlHelper=new SqlHelper(db_config_name);
+	}
 	
 	public void prepareTransaction(){
 		if(cc!=null)
@@ -49,19 +62,6 @@ public class SqlHelper
 				e.printStackTrace();
 			}
 		}
-	}
-	public static String db_config_name="";
-	public static SqlHelper getInstance()
-	{
-		if(StringUtils.isEmpty(db_config_name))
-		{
-			System.err.println("请配置SqlHelper.db_config_name");
-		}
-		return InstanceTools.sqlHelper;
-	}
-	
-	private static class InstanceTools{
-		private  static SqlHelper sqlHelper=new SqlHelper(db_config_name);
 	}
 	
 	public void close()
