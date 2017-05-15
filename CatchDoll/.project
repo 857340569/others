@@ -3,7 +3,7 @@
 	<name>CatchDoll</name>
 	<comment></comment>
 	<projects>
-		<project>DBConnector</project>
+		<project>WebBaser</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

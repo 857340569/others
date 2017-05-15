@@ -17,7 +17,7 @@ public class UserService extends Service<User>{
 	@Override
 	public List<User> query() {
 		DaoImpl impl=new DaoImpl();
-		String sql="select "+SqlHelper.getUpdateParam(ExecuteType.QUERY, new User(), "pwd").getParamNames();
+		String sql="select "+SqlHelper.getUpdateParam(ExecuteType.QUERY, new User(), "pwd").getParamNames()+" from duser";
 		return impl.query(User.class, sql);
 	}
 
